@@ -1,5 +1,41 @@
 ---
 title: "Analyzing US Census Data"
-author: "GitHub Copilot"
+author: "Rachelle Rodriguez"
 format: html
+execute:
+  echo: false
 ---
+
+```{r}
+#| message: false
+library(tidyverse)
+library(tidycensus)
+library(sf)
+```
+
+```{r}
+#| message: false
+income_tx <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "TX",
+  year = 2020,
+  geometry = TRUE
+)
+```
+
+```{r}
+ggplot(income_tx) +
+  geom_sf(aes(fill = estimate), color = NA) +
+  scale_fill_viridis_c(
+    option = "viridis",
+    name = "Median household income",
+    labels = scales::label_dollar(),
+    na.value = "grey90"
+  ) +
+  labs(
+    title = "Median Household Income Across Texas Counties",
+    caption = "Source: U.S. Census Bureau, 2020 American Community Survey 5-year estimates."
+  ) +
+  theme_void()
+```
