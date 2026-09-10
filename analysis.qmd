@@ -39,3 +39,41 @@ ggplot(income_tx) +
   ) +
   theme_void()
 ```
+
+```{r}
+#| message: false
+#| cache: true
+edu_state <- get_acs(
+  geography = "state",
+  variables = c(
+    "B15003_001",
+    "B15003_022",
+    "B15003_023",
+    "B15003_024",
+    "B15003_025"
+  ),
+  summary_var = "B15003_001",
+  year = 2020
+)
+```
+
+```{r}
+edu_state |>
+  filter(variable != "B15003_001") |>
+  group_by(NAME, GEOID) |>
+  summarise(
+    pct_bachelors = sum(estimate) / first(summary_est) * 100,
+    .groups = "drop"
+  ) |>
+  ggplot(aes(x = reorder(NAME, pct_bachelors), y = pct_bachelors)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Adults with a Bachelor's Degree or Higher by State",
+    x = "State",
+    y = "Bachelor's degree or higher",
+    caption = "Source: U.S. Census Bureau, 2020 American Community Survey 5-year estimates."
+  ) +
+  scale_y_continuous(labels = scales::label_percent(scale = 1)) +
+  theme_minimal()
+```
